@@ -1,5 +1,6 @@
 import random
 import math
+import timeit
 
 class AdjacencyMatrix(object):
     """Adjeacency Matrix obejct for covenient manipulation"""
@@ -74,6 +75,25 @@ class AdjacencyMatrix(object):
                     lowest_weight = weight
 
             self.visited[lowest_vertex] = lowest_weight
+
+    def mst_weight(self):
+        s = 0
+        for weight in self.visited.values():
+            s+= weight
+        return s
+
+    def prim_mst(self):
+        """Complete's Prim's algorithm and return the final mst"""
+        start = timeit.default_timer()
+        while len(self.visited.keys()) < self.n:
+            self.extract_min()
+
+        # return the total weight of the mst
+        s = self.mst_weigh()
+
+        stop = timeit.default_timer()
+        print "Seconds:", stop - start
+        return s
 
 
 
