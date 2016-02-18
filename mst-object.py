@@ -6,7 +6,10 @@ class AdjacencyMatrix(object):
     def __init__(self, n, dims):
         self.n = n
         self.matrix = []
-        self.visited = {x: None for x in range(n)}
+        self.visited = {}
+
+        # initialize one random vertex as root
+        self.visited[random.randint(0, n-1)] = 0
 
         if dims == 0:
             self.matrix = [[0]*n for x in range(n)]
@@ -36,20 +39,20 @@ class AdjacencyMatrix(object):
 
     def find_min(self, i):
         """For input vertex with index i, finds non-visited vertex with minimum 
-        weight and returns that vertex"""
+        weight and returns that vertex and its corresponding weight"""
         lowest_vertex = float("inf")
         lowest_weight = float("inf")
 
         # first search through ith row of matrix
         for j in range(i):
-            if not self.visited[j]:
+            if j not in self.visited:
                 if self.matrix[i][j] < lowest_weight:
                     lowest_vertex = j 
                     lowest_weight = self.matrix[i][j]
 
         # next search through ith column
         for j in range(i+1, self.n):
-            if not self.visited[j]:
+            if j not in self.visited:
                 if self.matrix[j][i] < lowest_weight:
                     lowest_vertex = j
                     lowest_weight = self.matrix[j][i]
@@ -58,11 +61,19 @@ class AdjacencyMatrix(object):
 
     def extract_min(self):
         """Extracts vertex with minimum weight from available vertices
-        in matrix"""
+        in matrix and adds that vertex/weight to visited dict"""
+        # TODO: implement real error checking here for end of sequence?
+        if len(self.visited.keys()) < self.n:
+            lowest_vertex = float("inf")
+            lowest_weight = float("inf")
 
+            for v in self.visited.keys():
+                u, weight = self.find_min(v)
+                if weight < lowest_weight:
+                    lowest_vertex = u
+                    lowest_weight = weight
 
-
-        return
+            self.visited[lowest_vertex] = lowest_weight
 
 
 
