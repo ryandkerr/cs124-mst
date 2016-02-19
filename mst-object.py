@@ -1,17 +1,16 @@
 import random
 import math
 import timeit
+import pdb
 
 class AdjacencyMatrix(object):
     """Adjeacency Matrix obejct for covenient manipulation"""
     def __init__(self, n, dims):
+        start = timeit.default_timer()
         self.n = n
         self.matrix = []
-        self.visited = {}
 
-        # initialize one random vertex as root
-        self.visited[random.randint(0, n-1)] = 0
-
+        # first create our adjacency matrix
         if dims == 0:
             self.matrix = [[0]*n for x in range(n)]
             # because we're filling in left-diagonal matrix, only one col is filled on first row,
@@ -38,59 +37,55 @@ class AdjacencyMatrix(object):
                     distance = math.sqrt(sum(sumSquares))
                     self.matrix[row][col] = distance
 
-    def find_min(self, i):
-        """For input vertex with index i, finds non-visited vertex with minimum 
-        weight and returns that vertex and its corresponding weight"""
-        lowest_vertex = float("inf")
-        lowest_weight = float("inf")
+        # initialize one random vertex as root and prepare tracking lists
+        self.root_index = random.randint(0, n-1)
+        self.all_weights = self.get_weights(self.root_index)
+        self.visited = [None] * n
+        self.visited[self.root_index] = 0
+        self.min_index = self.root_index
+        self.min_value = 0
 
-        # first search through ith row of matrix
+        stop = timeit.default_timer()
+        print stop - start, "seconds"
+
+
+    def get_weights(self, i):
+        """Returns a list of the weights for vertex i's edges.
+        Note that this returns a weight of 0 at index i."""
+        weights = [0] * self.n
         for j in range(i):
-            if j not in self.visited:
-                if self.matrix[i][j] < lowest_weight:
-                    lowest_vertex = j 
-                    lowest_weight = self.matrix[i][j]
-
-        # next search through ith column
+            weights[j] = self.matrix[i][j]
         for j in range(i+1, self.n):
-            if j not in self.visited:
-                if self.matrix[j][i] < lowest_weight:
-                    lowest_vertex = j
-                    lowest_weight = self.matrix[j][i]
+            weights[j] = self.matrix[j][i]
+        return weights
 
-        return (lowest_vertex, lowest_weight)
-
-    def extract_min(self):
-        """Extracts vertex with minimum weight from available vertices
-        in matrix and adds that vertex/weight to visited dict"""
-        # TODO: implement real error checking here for end of sequence?
-        if len(self.visited.keys()) < self.n:
-            lowest_vertex = float("inf")
-            lowest_weight = float("inf")
-
-            for v in self.visited.keys():
-                u, weight = self.find_min(v)
-                if weight < lowest_weight:
-                    lowest_vertex = u
-                    lowest_weight = weight
-
-            self.visited[lowest_vertex] = lowest_weight
 
     def mst_weight(self):
         s = 0
-        for weight in self.visited.values():
-            s+= weight
+        for weight in self.visited:
+            if weight:  # check that it's not None - temporary
+                s+= weight
         return s
 
     def prim_mst(self):
         """Complete's Prim's algorithm and return the final mst"""
         start = timeit.default_timer()
-        while len(self.visited.keys()) < self.n:
-            self.extract_min()
+        for _ in range(self.n):
+            weights = self.get_weights(self.min_index)
+            self.visited[self.min_index] = self.min_value
+            
+            # reset min value
+            self.min_value = float("inf")
+            for i, weight in enumerate(weights):
+                if self.visited[i] == None:
+                    if weight < self.all_weights[i]:
+                        self.all_weights[i] = weight
+                    if self.all_weights[i] < self.min_value:
+                        self.min_value = self.all_weights[i]
+                        self.min_index = i
 
         # return the total weight of the mst
-        s = self.mst_weigh()
-
+        s = self.mst_weight()
         stop = timeit.default_timer()
         print "Seconds:", stop - start
         return s
