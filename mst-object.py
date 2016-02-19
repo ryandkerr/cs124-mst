@@ -116,8 +116,9 @@ if __name__ == "__main__":
         csvwriter = csv.DictWriter(csvfile,fieldnames=fieldnames)
         #csvwriter.writeheader()
         for dim in [0,2,3,4]:
-            for node_power in range(2,11):
+            for node_power in range(11,17):
                 run_sim(5, int(math.pow(2,node_power)), dim, csvwriter)
+
 
 
 
