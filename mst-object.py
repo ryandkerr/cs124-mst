@@ -2,9 +2,10 @@ import random
 import math
 import timeit
 import pdb
+import csv
 
 class AdjacencyMatrix(object):
-    """Adjeacency Matrix obejct for covenient manipulation"""
+    """Adjacency Matrix object for convenient manipulation"""
     def __init__(self, n, dims):
         start = timeit.default_timer()
         self.n = n
@@ -84,15 +85,35 @@ class AdjacencyMatrix(object):
                         self.min_value = self.all_weights[i]
                         self.min_index = i
 
-        # return the total weight of the mst
-        s = self.mst_weight()
         stop = timeit.default_timer()
-        print "Seconds:", stop - start
-        return s
+
+        # total weight of the mst
+        weight = self.mst_weight()
+
+        time = stop - start
+        return (weight, time)
+
+
+def run_sim(reps, num_nodes, dim, csvwriter):
+    for r in range(reps):
+        G = AdjacencyMatrix(num_nodes, dim)
+        (mst_weight, time) = G.prim_mst()
+        print "Numnodes: {0}, Dim: {1}, MST weight: {2}, time: {3}".format(num_nodes, dim, mst_weight, time)
+        csvwriter.writerow({"Nodes": num_nodes, "Dimension": dim,"Size":mst_weight,"Time":time})
 
 
 
+# run_sim(5,)
 
+if __name__ == "__main__":
+
+    with open('./mst_sizes.csv','a') as csvfile:
+        fieldnames = ["Nodes", "Dimension","Size","Time"]
+        csvwriter = csv.DictWriter(csvfile,fieldnames=fieldnames)
+        #csvwriter.writeheader()
+        for dim in [0,2,3,4]:
+            for node_power in range(2,11):
+                run_sim(5, int(math.pow(2,node_power)), dim, csvwriter)
 
 
 
