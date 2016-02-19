@@ -7,7 +7,7 @@ import csv
 class AdjacencyMatrix(object):
     """Adjacency Matrix object for convenient manipulation"""
     def __init__(self, n, dims):
-        start = timeit.default_timer()
+        #start = timeit.default_timer()
         self.n = n
         self.matrix = []
 
@@ -46,8 +46,8 @@ class AdjacencyMatrix(object):
         self.min_index = self.root_index
         self.min_value = 0
 
-        stop = timeit.default_timer()
-        print stop - start, "seconds"
+        # stop = timeit.default_timer()
+        # print stop - start, "seconds"
 
 
     def get_weights(self, i):
