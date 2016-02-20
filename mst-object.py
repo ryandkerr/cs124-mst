@@ -64,7 +64,7 @@ class AdjacencyMatrix(object):
     def mst_weight(self):
         s = 0
         for weight in self.visited:
-            if weight:  # check that it's not None - temporary
+            if weight:  # check that it's not None (this is a temporary fix)
                 s+= weight
         return s
 
@@ -89,17 +89,18 @@ class AdjacencyMatrix(object):
 
         # total weight of the mst
         weight = self.mst_weight()
+        largest_weight = max(self.visited)
 
         time = stop - start
-        return (weight, time)
+        return (weight, time, largest_weight)
 
 
 def run_sim(reps, num_nodes, dim, csvwriter):
     for r in range(reps):
         G = AdjacencyMatrix(num_nodes, dim)
-        (mst_weight, time) = G.prim_mst()
-        print "Numnodes: {0}, Dim: {1}, MST weight: {2}, time: {3}".format(num_nodes, dim, mst_weight, time)
-        csvwriter.writerow({"Nodes": num_nodes, "Dimension": dim,"Size":mst_weight,"Time":time})
+        (mst_weight, time, largest) = G.prim_mst()
+        print "Numnodes: {0}, Dim: {1}, MST weight: {2}, time: {3}, largest: {4}".format(num_nodes, dim, mst_weight, time, largest)
+        csvwriter.writerow({"Nodes": num_nodes, "Dimension": dim,"Size":mst_weight,"Time":time, "Largest":largest})
 
 
 
@@ -107,12 +108,12 @@ def run_sim(reps, num_nodes, dim, csvwriter):
 
 if __name__ == "__main__":
 
-    with open('./mst_sizes.csv','a') as csvfile:
-        fieldnames = ["Nodes", "Dimension","Size","Time"]
+    with open('./mst_sizes_largest.csv','a') as csvfile:
+        fieldnames = ["Nodes", "Dimension","Size","Time", "Largest"]
         csvwriter = csv.DictWriter(csvfile,fieldnames=fieldnames)
         #csvwriter.writeheader()
         for dim in [0,2,3,4]:
-            for node_power in range(2,11):
+            for node_power in range(2,13):
                 run_sim(5, int(math.pow(2,node_power)), dim, csvwriter)
 
 
