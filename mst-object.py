@@ -7,7 +7,7 @@ import csv
 class AdjacencyMatrix(object):
     """Adjacency Matrix object for convenient manipulation"""
     def __init__(self, n, dims):
-        start = timeit.default_timer()
+        #start = timeit.default_timer()
         self.n = n
         self.matrix = []
 
@@ -46,8 +46,8 @@ class AdjacencyMatrix(object):
         self.min_index = self.root_index
         self.min_value = 0
 
-        stop = timeit.default_timer()
-        print stop - start, "seconds"
+        # stop = timeit.default_timer()
+        # print stop - start, "seconds"
 
 
     def get_weights(self, i):
@@ -113,8 +113,9 @@ if __name__ == "__main__":
         csvwriter = csv.DictWriter(csvfile,fieldnames=fieldnames)
         #csvwriter.writeheader()
         for dim in [0,2,3,4]:
-            for node_power in range(2,13):
+            for node_power in range(11,17):
                 run_sim(5, int(math.pow(2,node_power)), dim, csvwriter)
+
 
 
 
