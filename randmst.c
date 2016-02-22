@@ -75,6 +75,7 @@ double* get_weights(int index, int numpoints, int dimension, double* visited, do
             }
         }
     }
+    weights[index] = 0.0;
     return weights;
 }
 
@@ -88,23 +89,24 @@ double prim_mst(int n, int dims)
     }
 
     int root_index = rand();
+    root_index = root_index % 3;
     double visited[n];
-    double* all_weights = get_weights(root_index, n, dims, visited, coords);
     for(int i=0; i<n; i++)
     {
         visited[i] = 20.0;
     }
     visited[root_index] = 0;
+    double* all_weights = get_weights(root_index, n, dims, visited, coords);
 
     // these are used to keep track of things for prim's
     int min_index = root_index;
-    int min_value = 0.0;
+    float min_value = 0.0;
 
     for(int i=0; i<n; i++)
     {
-        double* weights = get_weights(i, n, dims, visited, coords);
+        double* weights = get_weights(min_index, n, dims, visited, coords);
         visited[min_index] = min_value;
-        min_value = 20.0;
+        min_value = 100.0;
 
         for(int j=0; j<n; j++)
         {
@@ -115,12 +117,13 @@ double prim_mst(int n, int dims)
                 {
                     all_weights[j] = weights[j];
                 }
+                if(all_weights[j] < min_value)
+                {
+                    min_value = all_weights[j];
+                    min_index = j;
+                }
             }
-            if(all_weights[j] < min_value)
-            {
-                min_value = all_weights[j];
-                min_index = j;
-            }
+            
         }
     }
 
@@ -145,7 +148,9 @@ int main (int argc, char *argv[])
 	int numtrials = atoi(argv[3]);
 	int dimension = atoi(argv[4]);
 
-    double x = prim_mst(numtrials, dimension);
+    // seed random num generator
+    srand(time(NULL));
+    double x = prim_mst(numpoints, dimension);
     printf("Pleseasease%f\n", x);
 
     // double weight = 0.0;
