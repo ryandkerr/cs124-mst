@@ -122,13 +122,19 @@ double prim_mst(int n, int dims)
     }
 
     // calculate the weight of the tree by summing all values in visited
-    double w;
+    double w = 0.0;
     for(int i=0; i<n; i++)
     {
         w += visited[i];
     }
 
+    for(int i=0; i<n; i++)
+    {
+        free(coords[i]);
+    }
+
     free(coords);
+    free(all_weights);
     return w;
 }
 
@@ -137,7 +143,6 @@ double prim_mst(int n, int dims)
 
 int main (int argc, char *argv[])
 {
-	//printf("Hello, world.");
 	int testing = atoi(argv[1]);
 	int numpoints = atoi(argv[2]);
 	int numtrials = atoi(argv[3]);
@@ -149,22 +154,49 @@ int main (int argc, char *argv[])
     int nodes[4] = {8192, 16384, 32768, 65536};
 
     double weight = 0.0;
-    for(int n=0; n<4; n++)
+    
+    // 42 is the flag for us running all of our trials
+    if(testing == 42)
     {
-        for(int dims=0; dims<5; dims++)
+
+        for(int n=0; n<4; n++)
         {
-            if(dims != 1)
+            for(int dims=0; dims<5; dims++)
             {
-                for (int reps = 0; reps < 5; reps++)
+                if(dims != 1)
                 {
-                    weight += prim_mst(nodes[n], dims);
+                    weight = 0.0;
+                    for (int reps = 0; reps < 5; reps++)
+                    {
+                        weight += prim_mst(nodes[n], dims);
+                    }
+
+                    double avg_weight = weight / 5.0;
+
+                    printf("weight:%f numpoints:%d numtrials:%d dimension:%d\n", avg_weight, nodes[n], 5, dims);
                 }
-
-                double avg_weight = weight / 5.0;
-
-                printf("weight:%f numpoints:%d numtrials:%d dimension:%d\n", avg_weight, nodes[n], 5, dims);
             }
         }
     }
+    // standard procedure
+    else
+    {
+        for(int reps=0; reps<numtrials; reps++)
+        {
+            double w = prim_mst(numpoints, dimension);
+            weight += w;
+            printf("w: %f, %f\n", weight, w);
+        }
+        double avg_weight = weight / (double)numtrials;
+        printf("weight:%f numpoints:%d numtrials:%d dimension:%d\n", avg_weight, numpoints, numtrials, dimension);
+        printf("Testing: %f, %f\n", (double)numtrials, weight);
+    }
 	return 0;
 }
+
+
+
+
+
+
+
