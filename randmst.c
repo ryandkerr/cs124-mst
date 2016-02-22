@@ -1,10 +1,17 @@
+/******
+* Joe Hostyk & Ryan Kerr
+* CS124 programming assignment 1 - MSTs
+* Due 2/22/16
+******/
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
 
 
-// return an array of coords
+// return a 2d array of randomly generated coordinates
 double** generate_coords(int numpoints, int dimension)
 {
     double **coords = (double **) malloc(sizeof (double *) * numpoints);
@@ -67,11 +74,11 @@ double* get_weights(int index, int numpoints, int dimension, double* visited, do
             }
         }
     }
-    weights[index] = 0.0;
+    weights[index] = 0.0;  // weight from a node to itself should be 0
     return weights;
 }
 
-// Generate graph with the given params; calculate weight of MST
+// Generate graph with the given params; return weight of MST for said graph
 double prim_mst(int n, int dims)
 {
     double** coords = NULL;
@@ -80,9 +87,9 @@ double prim_mst(int n, int dims)
         coords = generate_coords(n, dims);
     }
 
-    int root_index = rand();
+    int root_index = rand();  // initialize some random node as our "first"
     root_index = root_index % 3;
-    double visited[n];
+    double visited[n]; 
     for(int i=0; i<n; i++)
     {
         visited[i] = 20.0;
@@ -105,6 +112,7 @@ double prim_mst(int n, int dims)
             // if it has not been visited yet (20.0 represents not visited)
             if(visited[j] > 19.0)
             {
+                // update relevant values based on new weights
                 if(weights[j] < all_weights[j])
                 {
                     all_weights[j] = weights[j];
@@ -128,6 +136,7 @@ double prim_mst(int n, int dims)
         w += visited[i];
     }
 
+    // there is no coords array to free if dims == 0
     if(dims != 0)
     {
         for(int i=0; i<n; i++)
@@ -137,7 +146,7 @@ double prim_mst(int n, int dims)
 
         free(coords);
     }
-    
+
     free(all_weights);
     return w;
 }
@@ -155,14 +164,14 @@ int main (int argc, char *argv[])
     // seed random num generator
     srand(time(NULL));
 
-    int nodes[4] = {8192, 16384, 32768, 65536};
 
     double weight = 0.0;
     
-    // 42 is the flag for us running all of our trials
+    // 42 is our special flag
     if(testing == 42)
     {
-
+        // yucky hard-code: we need to run on these
+        int nodes[4] = {8192, 16384, 32768, 65536};
         for(int n=0; n<4; n++)
         {
             for(int dims=0; dims<5; dims++)
@@ -182,18 +191,16 @@ int main (int argc, char *argv[])
             }
         }
     }
-    // standard procedure
+    // how the function normally runs (without special flag 42)
     else
     {
         for(int reps=0; reps<numtrials; reps++)
         {
             double w = prim_mst(numpoints, dimension);
             weight += w;
-            printf("w: %f, %f\n", weight, w);
         }
         double avg_weight = weight / (double)numtrials;
-        printf("weight:%f numpoints:%d numtrials:%d dimension:%d\n", avg_weight, numpoints, numtrials, dimension);
-        printf("Testing: %f, %f\n", (double)numtrials, weight);
+        printf("%f %d %d %d\n", avg_weight, numpoints, numtrials, dimension);
     }
 	return 0;
 }
