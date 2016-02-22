@@ -128,12 +128,16 @@ double prim_mst(int n, int dims)
         w += visited[i];
     }
 
-    for(int i=0; i<n; i++)
+    if(dims != 0)
     {
-        free(coords[i]);
-    }
+        for(int i=0; i<n; i++)
+        {
+            free(coords[i]);
+        }
 
-    free(coords);
+        free(coords);
+    }
+    
     free(all_weights);
     return w;
 }
