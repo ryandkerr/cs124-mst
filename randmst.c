@@ -48,6 +48,65 @@ float** create_graph(int numpoints, int dimension)
 // int matrix[numpoints][numpoints];
 
 
+
+float prim_mst(int n, int dims)
+{
+    int coords[n];
+    if(dims > 0)
+    {
+        coords = generate_coords(n, dims);
+    }
+
+    int root_index = rand();
+    float* all_weights = get_weights(root_index, dims);
+    float visited[n];
+    for(int i=0; i<n; i++)
+    {
+        visited[i] = 20.0;
+    }
+    visited[root_index] = 0;
+
+    // these are used to keep track of things for prim's
+    int min_index = root_index;
+    int min_value = 0.0;
+
+    for(int i=0, i<n; i++)
+    {
+        float* weights = get_weights(i, n, dims, visited, coords);
+        visited[min_index] = min_value;
+        min_value = 20.0;
+
+        for(int j=0; j<n; j++)
+        {
+            // if it has not been visited yet (20.0 represents not visited)
+            if(visited[j] > 19.0)
+            {
+                if(weights[j] < all_weights[j])
+                {
+                    all_weights[j] = weights[j];
+                }
+            }
+            if(all_weights[j] < min_value)
+            {
+                min_value = all_weights[j];
+                min_index = j;
+            }
+        }
+    }
+
+    // calculate the weight of the tree by summing all values in visited
+    float w;
+    for(int i=0; i<n; i++)
+    {
+        w += visited[i];
+    }
+
+    return w;
+}
+
+
+
+
 int main (int argc, char *argv[])
 {
 	//printf("Hello, world.");
