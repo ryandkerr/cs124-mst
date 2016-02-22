@@ -1,65 +1,95 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
 
 
 
 
 // typedef struct adj_matrix {
 //     int nodes;
-//     float matrix[][];
+//     double matrix[][];
 // } adj_matrix;
 
 
-float** create_graph(int numpoints, int dimension)
+// return an array of coords
+double** generate_coords(int numpoints, int dimension)
 {
-	float **matrix = (float **) malloc(sizeof (float *) * numpoints);
-	for (int i = 0; i < numpoints; ++i) {
-    	matrix[i] = (float *) malloc(sizeof (float) * numpoints);
-	}
-   /* Intializes random number generator */
-   srand((unsigned) time(NULL));
-
-	if (dimension == 0)
-	{
-        // because we're filling in left-diagonal matrix, only one col is filled on first row,
-        // then two on the second, cols just needs to go up to rows each loop.
-            for (int row = 1; row < numpoints; row ++)
+    double **coords = (double **) malloc(sizeof (double *) * numpoints);
+     for (int i = 0; i < numpoints; ++i) {
+         coords[i] = (double *) malloc(sizeof (double) * numpoints);
+     }
+    //double coords[numpoints][dimension];
+        for (int i = 0; i < numpoints; i++)
+        {
+            for (int d = 0; d < dimension; d++)
             {
-            	for (int col = 0; col < row; col++)
-            	{
-                    matrix[row][col] = (float)rand()/(float)RAND_MAX;
-                    printf("Check%d %d\n",row, col);
-                }
-            } 
-    }
-
-	if (dimension != 0)
-	{
-		int coords[numpoints];
-		
-	}
-
-   return matrix;
+                coords[i][d] = (double)rand()/(double)RAND_MAX;
+            }
+        }
+    return coords;
 }
 
 
-
-// int matrix[numpoints][numpoints];
-
-
-
-float prim_mst(int n, int dims)
+// Return the distances from node "index" to all other unvisited nodes
+double* get_weights(int index, int numpoints, int dimension, double* visited, double** coords)
 {
-    int coords[n];
+    double* weights = (double *) malloc(sizeof (double) * numpoints);
+    if (dimension == 0)
+    {
+        for (int i = 0; i < numpoints; i++)
+        {
+            // if we haven't visied node i:
+            if (visited[i] > 19.0)
+            {
+                weights[i] = (double)rand()/(double)RAND_MAX;
+            }
+            // if we have visited i, we don't want to calculate a new distance
+            else
+            {
+                weights[i] = 20.0;
+            }
+        }
+    }
+    if (dimension != 0)
+    {
+        for (int i = 0; i<numpoints; i++)
+        {
+            if (visited[i] > 19.0)
+            {
+                // Find Euclidean distance:
+                double distance = 0.0;
+                for (int d = 0; d < dimension; d++)
+                {
+                    double p1 = coords[index][d];
+                    double p2 = coords[i][d];
+                    distance += pow(p1-p2, 2.0);
+                    //distance += pow(coords[index][d]-coords[i][d], 2.0);
+                }
+                weights[i] = sqrt(distance);
+            }
+            // if we have visited i, we don't want to calculate a new distance
+            else
+            {
+                weights[i] = 20.0;
+            }
+        }
+    }
+    return weights;
+}
+
+// Generate graph with the given params; calculate weight of MST
+double prim_mst(int n, int dims)
+{
+    double** coords = NULL;
     if(dims > 0)
     {
         coords = generate_coords(n, dims);
     }
 
     int root_index = rand();
-    float* all_weights = get_weights(root_index, dims);
-    float visited[n];
+    double visited[n];
+    double* all_weights = get_weights(root_index, n, dims, visited, coords);
     for(int i=0; i<n; i++)
     {
         visited[i] = 20.0;
@@ -70,9 +100,9 @@ float prim_mst(int n, int dims)
     int min_index = root_index;
     int min_value = 0.0;
 
-    for(int i=0, i<n; i++)
+    for(int i=0; i<n; i++)
     {
-        float* weights = get_weights(i, n, dims, visited, coords);
+        double* weights = get_weights(i, n, dims, visited, coords);
         visited[min_index] = min_value;
         min_value = 20.0;
 
@@ -95,7 +125,7 @@ float prim_mst(int n, int dims)
     }
 
     // calculate the weight of the tree by summing all values in visited
-    float w;
+    double w;
     for(int i=0; i<n; i++)
     {
         w += visited[i];
@@ -115,12 +145,15 @@ int main (int argc, char *argv[])
 	int numtrials = atoi(argv[3]);
 	int dimension = atoi(argv[4]);
 
-	// float[][] m = create_graph(numpoints, dimension);
-	float** m = create_graph(numpoints, dimension);
-	printf("%f\n", m[1][1]);
+    double x = prim_mst(numtrials, dimension);
+    printf("Pleseasease%f\n", x);
 
-	//float m[numpoints][numpoints];
-	//printf("%f\n", m[1][1]);
-	//m[3][3] = 2;
+    // double weight = 0.0;
+    // for (int reps = 0; reps < numtrials; reps++)
+    // {
+    //     weight = prim_mst(numtrials, dimension);
+    // }
+
+
 	return 0;
 }
