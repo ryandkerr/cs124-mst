@@ -4,14 +4,6 @@
 #include <math.h>
 
 
-
-
-// typedef struct adj_matrix {
-//     int nodes;
-//     double matrix[][];
-// } adj_matrix;
-
-
 // return an array of coords
 double** generate_coords(int numpoints, int dimension)
 {
@@ -125,6 +117,8 @@ double prim_mst(int n, int dims)
             }
             
         }
+
+        free(weights);
     }
 
     // calculate the weight of the tree by summing all values in visited
@@ -134,6 +128,7 @@ double prim_mst(int n, int dims)
         w += visited[i];
     }
 
+    free(coords);
     return w;
 }
 
@@ -150,15 +145,26 @@ int main (int argc, char *argv[])
 
     // seed random num generator
     srand(time(NULL));
-    double x = prim_mst(numpoints, dimension);
-    printf("Pleseasease%f\n", x);
 
-    // double weight = 0.0;
-    // for (int reps = 0; reps < numtrials; reps++)
-    // {
-    //     weight = prim_mst(numtrials, dimension);
-    // }
+    int nodes[4] = {8192, 16384, 32768, 65536};
 
+    double weight = 0.0;
+    for(int n=0; n<4; n++)
+    {
+        for(int dims=0; dims<5; dims++)
+        {
+            if(dims != 1)
+            {
+                for (int reps = 0; reps < 5; reps++)
+                {
+                    weight += prim_mst(nodes[n], dims);
+                }
 
+                double avg_weight = weight / 5.0;
+
+                printf("weight:%f numpoints:%d numtrials:%d dimension:%d\n", avg_weight, nodes[n], 5, dims);
+            }
+        }
+    }
 	return 0;
 }
