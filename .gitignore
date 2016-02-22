@@ -1,2 +1,5 @@
 prog1.pdf
 *.pyc
+build
+mst_sizes_testing.csv
+.ipynb_checkpoints/

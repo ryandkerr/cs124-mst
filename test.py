@@ -1,4 +1,4 @@
 import sys
-import helloworld as h
+import mstfunctions as mst
 
-h.hi(sys.argv[1])
+print mst.prim_mst(int(sys.argv[1]), int(sys.argv[2]))

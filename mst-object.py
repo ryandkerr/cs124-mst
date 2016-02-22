@@ -3,6 +3,7 @@ import math
 import timeit
 import pdb
 import csv
+from numba import jit
 
 class AdjacencyMatrix(object):
     """Adjacency Matrix object for convenient manipulation"""
@@ -50,6 +51,7 @@ class AdjacencyMatrix(object):
         # print stop - start, "seconds"
 
 
+    
     def get_weights(self, i):
         """Returns a list of the weights for vertex i's edges.
         Note that this returns a weight of 0 at index i."""
@@ -108,12 +110,12 @@ def run_sim(reps, num_nodes, dim, csvwriter):
 
 if __name__ == "__main__":
 
-    with open('./mst_sizes_largest.csv','a') as csvfile:
+    with open('./mst_sizes_testing.csv','a') as csvfile:
         fieldnames = ["Nodes", "Dimension","Size","Time", "Largest"]
         csvwriter = csv.DictWriter(csvfile,fieldnames=fieldnames)
         #csvwriter.writeheader()
         for dim in [0,2,3,4]:
-            for node_power in range(11,17):
+            for node_power in range(8,12):
                 run_sim(5, int(math.pow(2,node_power)), dim, csvwriter)
 
 
